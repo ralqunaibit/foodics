@@ -1,0 +1,87 @@
+* Foodics
+
+This document provides an overview of the architecture of the solution.
+
+* Overview
+
+The solution automates the deployment of a Dockerized application to a Kubernetes cluster using Ansible. The process involves building and pushing Docker images, updating Kubernetes manifests, and applying these manifests to the cluster.
+
+* Architecture
+
+The architecture consists of the following key components:
+
+1. **Ansible**: Used for automation and orchestration.
+2. **Docker**: Containerizes the application.
+3. **Kubernetes**: Orchestrates the deployment, scaling, and management of containerized applications.
+4. **Minikube**: Provides a local Kubernetes cluster for development and testing.
+5. **Kubectl**: Command-line tool for interacting with the Kubernetes cluster.
+
+**Workflow:**
+
+1. **Build Docker Image**: The website is containerized using Docker.
+2. **Push Docker Image**: The Docker image is pushed to Docker Hub.
+3. **Update Kubernetes Manifests**: The Kubernetes manifests are updated with the new Docker image tag.
+4. **Apply Manifests**: The updated Kubernetes manifests are applied to the Minikube cluster.
+5. **Access the Application**: The application is accessed through the Minikube service.
+
+
+* Challenges Faced
+
+1. **Network Issues with Docker Push**: Encountered network timeouts when pushing Docker images to Docker Hub too much.
+2. **Dynamic Tagging**: Updating Kubernetes manifests dynamically with the new Docker image tag to ensure the latest image is deployed. I chose timestamps.
+
+* Diagrams
+
+#+begin_src dot :file architecture.png :cmdline -Kdot -Tpng
+digraph architecture {
+  rankdir=LR;
+  
+  subgraph cluster_ansible {
+    label="Ansible";
+    style=dashed;
+    Ansible [label="Ansible Playbooks", shape=box];
+  }
+  
+  subgraph cluster_docker {
+    label="Docker";
+    style=dashed;
+    Dockerfile [label="Dockerfile", shape=box];
+    DockerHub [label="Docker Hub", shape=box];
+  }
+  
+  subgraph cluster_k8s {
+    label="Kubernetes";
+    style=dashed;
+    K8sCluster [label="Kubernetes Cluster (Minikube)", shape=box];
+    K8sManifests [label="Kubernetes Manifests", shape=box];
+  }
+  
+  Ansible -> Dockerfile [label="Build Image"];
+  Dockerfile -> DockerHub [label="Push Image"];
+  Ansible -> K8sManifests [label="Update Manifests"];
+  K8sManifests -> K8sCluster [label="Apply Manifests"];
+  K8sCluster -> User [label="Access Application"];
+}
+#+end_src
+
+* Detailed Steps
+
+** 1. Build Docker Image
+
+The Ansible playbook `build_and_push_image.yml` contains a role `build_image` that builds the Docker image from the application code. The Dockerfile specifies the environment and dependencies needed for the application.
+
+** 2. Push Docker Image
+
+The same playbook contains a role `push_image` that logs into Docker Hub using credentials from the `.env` file and pushes the newly built image to Docker Hub.
+
+** 3. Update Kubernetes Manifests
+
+The playbook uses a role `update_k8s_manifest` to update the Kubernetes manifests with the new Docker image tag. This ensures that the latest image is deployed when the manifests are applied to the cluster.
+
+** 4. Apply Kubernetes Manifests
+
+The playbook `deploy_to_k8s.yml` applies the updated Kubernetes manifests to the Minikube cluster. This step creates or updates the Kubernetes resources defined in the manifests.
+
+** 5. Access the Application
+
+Once the application is deployed, it can be accessed through the Minikube service. The `minikube service <service-name>` command opens the service in the default web browser.

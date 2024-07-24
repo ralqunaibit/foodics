@@ -1,0 +1,4 @@
+- name: Apply Kubernetes manifests
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', '../k8s/manifests.yml') }}"

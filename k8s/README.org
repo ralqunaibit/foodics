@@ -1,0 +1,77 @@
+* Kubernetes Deployment Project
+
+This document provides instructions on how to apply Kubernetes manifests and access the deployed application.
+
+* Prerequisites
+
+Before applying the Kubernetes manifests, ensure you have the following prerequisites installed:
+
+- **Kubectl**: v1.18 or higher
+- **Minikube**: v1.18 or higher
+
+* Directory Structure
+
+The project directory is organized as follows:
+
+#+begin_example
+foodics/
+└── k8s/
+    └── manifests.yml.j2
+
+#+end_example
+
+
+* Applying the Kubernetes Manifests
+
+** 1. Start Minikube
+
+Start your Minikube cluster:
+
+#+begin_src bash
+minikube start
+#+end_src
+
+** 2. Apply the Kubernetes Manifests
+
+Navigate to the `k8s` directory and apply the Kubernetes manifests:
+
+#+begin_src bash
+cd k8s
+kubectl apply -f manifests.yml
+#+end_src
+
+* Accessing the Application
+
+After applying the manifests, you can access the application using Minikube:
+
+#+begin_src bash
+minikube service nginx-service
+#+end_src
+
+Or manually get the Minikube IP and NodePort:
+
+** 1. Get the Minikube IP
+
+#+begin_src bash
+minikube ip
+#+end_src
+
+** 2. Get the Service Details
+
+#+begin_src bash
+kubectl get svc nginx-service
+#+end_src
+
+Access the application at:
+
+#+begin_example
+http://<minikube_ip>:<node_port>
+#+end_example
+
+* Troubleshooting
+
+For further issues, check the Kubernetes logs:
+
+#+begin_src bash
+kubectl logs <pod_name>
+#+end_src

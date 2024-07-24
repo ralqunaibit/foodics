@@ -1,0 +1,101 @@
+* Docker Deployment
+
+This readme provides instructions on how to build and run a Docker container locally for a Dockerized application. Note that this website was an old project I worked on almsot 10 years ago. So I thought of reusing it for the docker part of this assignment.
+
+* Prerequisites
+
+Before running the Docker container, ensure you have the following prerequisites installed:
+
+- **Docker**: v19.03 or higher
+
+* Directory Structure
+
+The project directory is organized as follows:
+
+#+begin_example
+foodics/
+└── app/
+   ├── Dockerfile
+   └── (website files)
+#+end_example
+* Building and Running the Docker Container
+
+** 1. Build the Docker Image
+
+Navigate to the `app` directory and build the Docker image:
+
+#+begin_src bash
+cd app
+docker build -t your_dockerhub_username/your_image_name:latest .
+#+end_src
+
+** 2. Run the Docker Container
+
+Run the Docker container from the image you just built:
+
+#+begin_src bash
+docker run -d -p 80:80 --name your_container_name your_dockerhub_username/your_image_name:latest
+#+end_src
+
+* Accessing the Application
+
+After running the Docker container, you can access the application in your browser at:
+
+#+begin_example
+http://localhost:80
+#+end_example
+
+* Stopping and Removing the Docker Container
+
+** 1. Stop the Docker Container
+
+Stop the running Docker container:
+
+#+begin_src bash
+docker stop your_container_name
+#+end_src
+
+** 2. Remove the Docker Container
+
+Remove the stopped Docker container:
+
+#+begin_src bash
+docker rm your_container_name
+#+end_src
+
+* Pushing the Docker Image to Docker Hub
+
+** 1. Log in to Docker Hub
+
+Log in to your Docker Hub account:
+
+#+begin_src bash
+docker login
+#+end_src
+
+** 2. Tag the Docker Image
+
+Tag the Docker image for pushing to Docker Hub:
+
+#+begin_src bash
+docker tag your_dockerhub_username/your_image_name:latest your_dockerhub_username/your_image_name:latest
+#+end_src
+
+** 3. Push the Docker Image
+
+Push the Docker image to Docker Hub:
+
+#+begin_src bash
+docker push your_dockerhub_username/your_image_name:latest
+#+end_src
+
+* Troubleshooting
+
+- **Port Conflict**: Ensure port 80 is not in use by another application.
+- **Docker Daemon Not Running**: Ensure the Docker daemon is running.
+
+For further issues, check the Docker logs:
+
+#+begin_src bash
+docker logs your_container_name
+#+end_src

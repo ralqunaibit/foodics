@@ -1,0 +1,4 @@
+- name: Deploy to Kubernetes
+  hosts: local
+  roles:
+    - deploy_k8s

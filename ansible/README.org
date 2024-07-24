@@ -1,0 +1,159 @@
+* Ansible Deployment Project
+
+This project automates the deployment of a Dockerized application to a Kubernetes cluster using Ansible. The setup includes building and pushing Docker images, updating Kubernetes manifests, and applying the manifests to the cluster.
+
+* Prerequisites
+
+Before running the Ansible playbooks, ensure you have the following prerequisites installed:
+
+- Ansible: v2.9 or higher
+- Docker: v19.03 or higher
+- Minikube: v1.18 or higher
+- Kubectl: v1.18 or higher
+- Python: v3.6 or higher
+- Python Packages: pip, kubernetes, docker
+
+* Directory Structure
+
+The project directory is organized as follows:
+
+#+begin_example
+my_project/
+├── ansible/
+│   ├── roles/
+│   │   ├── build_image/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── push_image/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── update_k8s_manifest/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   │   ├── deploy_k8s/
+│   │   │   └── tasks/
+│   │   │       └── main.yml
+│   ├── build_and_push_image.yml
+│   ├── deploy_to_k8s.yml
+│   ├── inventory
+│   └── .env
+├── app/
+│   ├── Dockerfile
+│   └── (website files and images)
+├── k8s/
+│   └── manifests.yml.j2
+└── automation_script.sh
+#+end_example
+
+* Setup
+
+** 1. Install Ansible and Dependencies
+
+Install Ansible and the required Python packages:
+
+#+begin_src bash
+sudo apt update
+sudo apt install -y ansible python3-pip
+pip3 install kubernetes docker
+#+end_src
+
+** 2. Configure Environment Variables
+
+Create a `.env` file in the ansible/ directory with your Docker Hub credentials:
+
+#+begin_example
+DOCKERHUB_USERNAME=your_dockerhub_username
+DOCKERHUB_PASSWORD=your_dockerhub_password
+#+end_example
+
+** 3. Inventory File
+
+Create an `inventory` file in the `ansible/` directory:
+
+#+begin_example
+localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+#+end_example
+
+* Running the Playbooks
+
+** 1. Automation Script
+
+You can use the provided `automation_script.sh` to run the entire process:
+
+#+begin_src bash
+./automation_script.sh
+#+end_src
+
+** 2. Individual Playbooks
+
+Alternatively, you can run each playbook individually:
+
+*** Build and Push Docker Image
+
+#+begin_src bash
+cd ansible
+ansible-playbook build_and_push_image.yml -i inventory
+#+end_src
+
+*** Deploy to Kubernetes
+
+#+begin_src bash
+cd ansible
+ansible-playbook deploy_to_k8s.yml -i inventory
+#+end_src
+
+* Roles Overview
+
+** build_image
+
+Builds the Docker image from the application code.
+
+*** Tasks:
+- Build Docker image
+
+** push_image
+
+Pushes the Docker image to Docker Hub.
+
+*** Tasks:
+- Log in to Docker Hub
+- Push Docker image to registry
+
+** update_k8s_manifest
+
+Updates the Kubernetes manifest with the new Docker image tag.
+
+*** Tasks:
+- Render Kubernetes manifest template
+
+** deploy_k8s
+
+Applies the Kubernetes manifests to the cluster.
+
+*** Tasks:
+- Apply Kubernetes manifests
+  
+* Accessing the Application
+
+After deployment, you can access the application using Minikube:
+
+#+begin_src bash
+minikube service nginx-service
+#+end_src
+
+Or manually get the Minikube IP and NodePort:
+
+#+begin_src bash
+minikube ip
+kubectl get svc nginx-service
+#+end_src
+
+Access the application at `http://<minikube_ip>:<node_port>`.
+
+* Troubleshooting
+
+For further issues, check the logs with verbosity enabled:
+
+#+begin_src bash
+ansible-playbook <playbook>.yml -i inventory -vvv
+#+end_src

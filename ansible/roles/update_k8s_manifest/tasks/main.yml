@@ -1,0 +1,4 @@
+- name: Render Kubernetes manifest template
+  template:
+    src: "{{ playbook_dir }}/../k8s/manifests.yml.j2"
+    dest: "{{ playbook_dir }}/../k8s/manifests.yml"

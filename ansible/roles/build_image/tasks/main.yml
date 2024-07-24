@@ -1,0 +1,9 @@
+- name: Build Docker image
+  community.docker.docker_image:
+    build:
+      path: "{{ playbook_dir }}/../app"
+      dockerfile: "{{ playbook_dir }}/../app/Dockerfile"
+    name: "{{ docker_image_name }}"
+    tag: "{{ docker_image_tag }}"
+    source: build
+    state: present

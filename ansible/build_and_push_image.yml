@@ -1,0 +1,27 @@
+- name: Build and Push Docker Image
+  hosts: local
+  pre_tasks:
+    - name: Generate new Docker image tag
+      command: date +%Y%m%d%H%M%S
+      register: image_tag
+    - name: Set Docker image name and tag
+      set_fact:
+        dockerhub_username: "{{ lookup('env', 'DOCKERHUB_USERNAME') }}"
+        docker_image_name: "rawme/jimi-foodics"
+        docker_image_tag: "{{ image_tag.stdout }}"
+  roles:
+    - role: build_image
+      vars:
+        dockerhub_username: "{{ dockerhub_username }}"
+        docker_image_name: "{{ docker_image_name }}"
+        docker_image_tag: "{{ docker_image_tag }}"
+    - role: push_image
+      vars:
+        dockerhub_username: "{{ dockerhub_username }}"
+        docker_image_name: "{{ docker_image_name }}"
+        docker_image_tag: "{{ docker_image_tag }}"
+    - role: update_k8s_manifest
+      vars:
+        dockerhub_username: "{{ dockerhub_username }}"
+        docker_image_name: "{{ docker_image_name }}"
+        docker_image_tag: "{{ docker_image_tag }}"
